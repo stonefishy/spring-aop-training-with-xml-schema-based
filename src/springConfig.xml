@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+    http://www.springframework.org/schema/aop 
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd ">
+
+	<aop:config>
+		<aop:aspect id="logging" ref="myLogging">
+		
+			<aop:pointcut id="saveDataPointcut" expression="execution(* spring.test.aop.*.saveData(..))" />
+			
+			<aop:pointcut id="getDataPointcut" expression="execution(* spring.test.aop.*.getData())"/>
+			
+			<aop:before method="beforeSaveData" pointcut-ref="saveDataPointcut" />
+			
+			<aop:after method="afterSaveData" pointcut-ref="saveDataPointcut" />
+			
+			<aop:before method="beforeGetData" pointcut="execution(* spring.test.aop.MyData.getData())"/>
+			
+			<aop:after method="afterGetData" pointcut="execution(* spring.test.aop.*.get*())"/>
+			
+			<aop:after-returning method="afterReturningAdvice"
+				pointcut-ref="getDataPointcut" returning="returnValue" />
+				
+			<aop:after-throwing method="throwingAdvice"
+				pointcut="execution(* spring.test.aop.MyData.concatData(String))" throwing="ex" />
+				
+		</aop:aspect>
+	</aop:config>
+	
+	<bean id="myLogging" class="spring.test.aop.MyLogging" />
+	
+	<bean id="myData" class="spring.test.aop.MyData" />
+</beans>
